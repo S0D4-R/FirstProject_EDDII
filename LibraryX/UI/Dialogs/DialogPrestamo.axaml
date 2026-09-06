@@ -1,0 +1,82 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="LibraryX.UI.Dialogs.DialogPrestamo"
+        Title="Registrar Préstamo"
+        Width="380" Height="270"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#1a1410">
+
+  <Window.Styles>
+    <Style Selector="TextBox">
+      <Setter Property="Background" Value="#12100e"/>
+      <Setter Property="BorderBrush" Value="#5a3e1b"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="#e8e0f4"/>
+      <Setter Property="CaretBrush" Value="#c9a96e"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Padding" Value="8,6"/>
+      <Setter Property="CornerRadius" Value="3"/>
+    </Style>
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+      <Setter Property="BorderBrush" Value="#c9a96e"/>
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="Foreground" Value="#c9a96e"/>
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="Margin" Value="0,0,0,4"/>
+      <Setter Property="LetterSpacing" Value="1"/>
+    </Style>
+    <Style Selector="Button.confirm">
+      <Setter Property="Background" Value="#2e1f4a"/>
+      <Setter Property="BorderBrush" Value="#7c5cbf"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="#c4a8f0"/>
+      <Setter Property="Padding" Value="20,8"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button.cancel">
+      <Setter Property="Background" Value="#1e150a"/>
+      <Setter Property="BorderBrush" Value="#5a3e1b"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="#c9a96e"/>
+      <Setter Property="Padding" Value="20,8"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+  </Window.Styles>
+
+  <Border Margin="20" BorderBrush="#5a3e1b" BorderThickness="1" CornerRadius="4" Padding="24">
+    <StackPanel Spacing="14">
+
+      <TextBlock Text="✦ REGISTRAR PRÉSTAMO ✦"
+                 Foreground="#c9a96e" FontSize="11" LetterSpacing="3"
+                 HorizontalAlignment="Center" Opacity="0.85" Margin="0,0,0,6"/>
+
+      <StackPanel Spacing="0">
+        <TextBlock Classes="label" Text="CÓDIGO DEL LIBRO"/>
+        <TextBox x:Name="TxtCodigo" Watermark="Ej. LIB-001"/>
+      </StackPanel>
+
+      <StackPanel Spacing="0">
+        <TextBlock Classes="label" Text="NOMBRE DEL LECTOR"/>
+        <TextBox x:Name="TxtLector" Watermark="Nombre completo"/>
+      </StackPanel>
+
+      <Grid ColumnDefinitions="*,12,*" Margin="0,8,0,0">
+        <Button Grid.Column="0" Classes="cancel" Content="✘  Cancelar"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Click="OnCancelarClick"/>
+        <Button Grid.Column="2" Classes="confirm" Content="✔  Registrar"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Click="OnConfirmarClick"/>
+      </Grid>
+
+      <TextBlock x:Name="TxtError" Text="" Foreground="#c97070" FontSize="11"
+                 HorizontalAlignment="Center" IsVisible="False"/>
+
+    </StackPanel>
+  </Border>
+
+</Window>

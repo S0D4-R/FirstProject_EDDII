@@ -1,0 +1,156 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="LibraryX.UI.MainWindow"
+        Title="Biblioteca Arcana"
+        Width="960" Height="640"
+        MinWidth="720" MinHeight="500"
+        Background="#1a1410">
+
+  <Window.Styles>
+    <Style Selector="Button.side">
+      <Setter Property="Background" Value="#1e150a"/>
+      <Setter Property="BorderBrush" Value="#5a3e1b"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="#c9a96e"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Padding" Value="10,6"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="0,0,0,6"/>
+      <Setter Property="CornerRadius" Value="3"/>
+    </Style>
+    <Style Selector="Button.side:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#2a1e0f"/>
+    </Style>
+    <Style Selector="Button.danger">
+      <Setter Property="BorderBrush" Value="#7c1f1f"/>
+      <Setter Property="Foreground" Value="#c97070"/>
+    </Style>
+    <Style Selector="Button.audio">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="#5a3e1b"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="20"/>
+      <Setter Property="Foreground" Value="#c9a96e"/>
+      <Setter Property="Width" Value="26"/>
+      <Setter Property="Height" Value="26"/>
+      <Setter Property="Padding" Value="0"/>
+    </Style>
+    <Style Selector="Button.choice">
+      <Setter Property="Background" Value="#2e1f4a55"/>
+      <Setter Property="BorderBrush" Value="#7c5cbf"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="#c4a8f0"/>
+      <Setter Property="Padding" Value="16,8"/>
+      <Setter Property="Margin" Value="0,0,0,6"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="12">
+
+    <!-- Título -->
+    <TextBlock Grid.Row="0" Text="✦ BIBLIOTECA ARCANA ✦"
+               Foreground="#c9a96e" FontSize="12" LetterSpacing="3"
+               HorizontalAlignment="Center" Opacity="0.75" Margin="0,0,0,10"/>
+
+    <!-- Escenario + Sidebar -->
+    <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+
+      <!-- ESCENARIO VN -->
+      <Border Grid.Column="0" BorderBrush="#5a3e1b" BorderThickness="1"
+              Background="#0d0b09" Margin="0,0,10,0" ClipToBounds="True">
+        <Grid>
+
+          <!-- ============================================================ -->
+          <!-- 1) FONDO — pon aquí tu imagen de fondo (fondo.png, etc.)       -->
+          <!-- Reemplaza el Border de placeholder por:                       -->
+          <!--   <Image x:Name="BackgroundImage" Stretch="UniformToFill"/>   -->
+          <!-- y en el .cs: BackgroundImage.Source = new Bitmap(ruta);       -->
+          <!-- ============================================================ -->
+          <Border Background="#12100e">
+            <Image x:Name="BackgroundImage" Stretch="UniformToFill"/>
+          </Border>
+
+          <!-- ============================================================ -->
+          <!-- 2) SPRITES — personajes izquierdo y derecho                   -->
+          <!-- Reemplaza cada Border por un <Image x:Name="SpriteLeft"/>     -->
+          <!-- (o SpriteRight) y en el .cs: SpriteLeft.Source = new Bitmap.. -->
+          <!-- ============================================================ -->
+        <Grid x:Name="SpriteContainer" PointerPressed="OnSpriteClick" Background="Transparent">
+          <Image x:Name="SpriteLeft" Stretch="Uniform" MaxHeight="450" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+        </Grid>
+
+          <!-- Caja de diálogo -->
+          <StackPanel VerticalAlignment="Bottom" Margin="10,0,10,10">
+            <Border Background="#2e1f4a" BorderBrush="#7c5cbf" BorderThickness="1,1,1,0"
+                    CornerRadius="4,4,0,0" Padding="16,3" Margin="16,0,0,-1"
+                    HorizontalAlignment="Left">
+              <!-- Nombre del personaje que habla -->
+              <TextBlock x:Name="SpeakerName" Text="Bibliotecaria" Foreground="#c4a8f0" FontSize="12" LetterSpacing="1"/>
+            </Border>
+            <Border Background="#08061299" BorderBrush="#4a3370" BorderThickness="1,1,1,1" Padding="16,10,16,12" CornerRadius="0,4,4,4">
+              <Grid>
+                <!-- Texto del diálogo -->
+                <TextBlock x:Name="DialogueText"
+                           Text="Bienvenido a la Biblioteca Arcana. ¿Qué título buscas hoy, viajero?"
+                           Foreground="#e8e0f4" FontSize="13" LineHeight="20" TextWrapping="Wrap"/>
+              </Grid>
+            </Border>
+
+            <!-- Barra de opciones (interactiva para diálogos) -->
+            <Border x:Name="ChoiceBar" Background="#08061299" BorderBrush="#3d2e1a" BorderThickness="0,1,0,0"
+                    Padding="16,8" IsVisible="False">
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                <Button x:Name="ChoiceButton1" Classes="choice" Content="Opción 1" Click="OnChoice1Click"/>
+                <Button x:Name="ChoiceButton2" Classes="choice" Content="Opción 2" Click="OnChoice2Click"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+
+        </Grid>
+      </Border>
+
+      <!-- SIDEBAR: acciones de la biblioteca -->
+      <StackPanel Grid.Column="1" Width="100" VerticalAlignment="Top">
+        <Button Classes="side" Content="📖 Buscar" Click="OnBuscarClick"/>
+        <Button Classes="side" Content="➕ Agregar" Click="OnAgregarClick"/>
+        <Button Classes="side" Content="📋 Listar" Click="OnListarClick"/>
+        <Button Classes="side" Content="📚 Préstamo" Click="OnPrestamoClick"/>
+        <Button Classes="side" Content="↩️ Devolver" Click="OnDevolverClick"/>
+        <Button Classes="side" Content="📊 Reporte" Click="OnReporteClick"/>
+        <Button Classes="side" Content="⬆️ Cargar" Click="OnCargarClick"/>
+        <Button Classes="side danger" Content="🚪 Salir" Click="OnExitClick"/>
+      </StackPanel>
+
+    </Grid>
+
+    <!-- 3) AUDIO — música de fondo -->
+    <Border Grid.Row="2" Background="#12100e" BorderBrush="#3d2e1a" BorderThickness="1"
+            CornerRadius="4" Padding="10,6" Margin="0,8,0,0">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+          <TextBlock Text="🎵" FontSize="14" Foreground="#5a3e1b" VerticalAlignment="Center"/>
+          <TextBlock x:Name="AudioFileLabel" Text="[ bgm.mp3 — sin archivo ]"
+                     Foreground="#5a3e1b" FontSize="11" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
+          <Button Classes="audio" Content="▶" Click="OnPlayClick"/>
+          <Button Classes="audio" Content="⏸" Click="OnPauseClick"/>
+          <TextBlock Text="🔊" FontSize="12" Foreground="#5a3e1b" VerticalAlignment="Center" Margin="8,0,0,0"/>
+          <Slider x:Name="VolumeSlider" Minimum="0" Maximum="100" Value="25" Width="100" VerticalAlignment="Center"
+                  ValueChanged="OnVolumeChanged"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Franja inferior -->
+    <Grid Grid.Row="3" ColumnDefinitions="*,*" Margin="0,4,0,0">
+      <TextBlock Grid.Column="0" Text="ESC — menú" Foreground="#3d2e1a" FontSize="10" LetterSpacing="1"/>
+      <TextBlock Grid.Column="1" Text="↵ — continuar" Foreground="#3d2e1a" FontSize="10" LetterSpacing="1"
+                 HorizontalAlignment="Right"/>
+    </Grid>
+
+  </Grid>
+</Window>
