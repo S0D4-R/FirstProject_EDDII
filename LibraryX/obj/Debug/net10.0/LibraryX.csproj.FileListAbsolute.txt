@@ -73,3 +73,4 @@
 /home/yv/YV/Landivar/cuarto_semestre/EDD_II/FirstProject/LibraryX/obj/Debug/net10.0/LibraryX.csproj.Up2Date
 /home/yv/YV/Landivar/cuarto_semestre/EDD_II/FirstProject/LibraryX/obj/Debug/net10.0/LibraryX.genruntimeconfig.cache
 /home/yv/YV/Landivar/cuarto_semestre/EDD_II/FirstProject/LibraryX/obj/Debug/net10.0/ref/LibraryX.dll
+/home/yv/YV/Landivar/cuarto_semestre/EDD_II/FirstProject/LibraryX/obj/Debug/net10.0/LibraryX.sourcelink.json

@@ -1,7 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="LibraryX.UI.MainWindow"
-        Title="Biblioteca Arcana"
+        Title="Mystic Library"
         Width="960" Height="640"
         MinWidth="720" MinHeight="500"
         Background="#1a1410">
@@ -50,7 +50,7 @@
   <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="12">
 
     <!-- Título -->
-    <TextBlock Grid.Row="0" Text="✦ BIBLIOTECA ARCANA ✦"
+    <TextBlock Grid.Row="0" Text="✦ Mystic Library ✦"
                Foreground="#c9a96e" FontSize="12" LetterSpacing="3"
                HorizontalAlignment="Center" Opacity="0.75" Margin="0,0,0,10"/>
 
@@ -87,13 +87,13 @@
                     CornerRadius="4,4,0,0" Padding="16,3" Margin="16,0,0,-1"
                     HorizontalAlignment="Left">
               <!-- Nombre del personaje que habla -->
-              <TextBlock x:Name="SpeakerName" Text="Bibliotecaria" Foreground="#c4a8f0" FontSize="12" LetterSpacing="1"/>
+              <TextBlock x:Name="SpeakerName" Text="Chihiro Fujisaki" Foreground="#c4a8f0" FontSize="12" LetterSpacing="1"/>
             </Border>
             <Border Background="#08061299" BorderBrush="#4a3370" BorderThickness="1,1,1,1" Padding="16,10,16,12" CornerRadius="0,4,4,4">
               <Grid>
                 <!-- Texto del diálogo -->
                 <TextBlock x:Name="DialogueText"
-                           Text="Bienvenido a la Biblioteca Arcana. ¿Qué título buscas hoy, viajero?"
+                           Text="Bienvenido a la Biblioteca!. ¿Qué título buscas hoy, viajero?"
                            Foreground="#e8e0f4" FontSize="13" LineHeight="20" TextWrapping="Wrap"/>
               </Grid>
             </Border>

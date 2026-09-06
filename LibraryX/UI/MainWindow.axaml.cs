@@ -31,7 +31,7 @@ public partial class MainWindow : Window
 
         // Diálogo de bienvenida al arrancar
         IniciarDialogo(
-            ["Bibliotecaria", "Bibliotecaria"],
+            ["Chihiro Fujisaki", "Chihiro Fujisaki"],
             [
                 "Bienvenido a la Biblioteca Arcana... Sus pasillos guardan siglos de conocimiento.",
                 "Puedes buscar, agregar o prestar volúmenes desde el panel lateral. ¿En qué puedo ayudarte?"
@@ -243,7 +243,7 @@ public partial class MainWindow : Window
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Thinking");
-        MostrarDialogo("Bibliotecaria", "Consultando los estantes arcanos...");
+        MostrarDialogo("Chihiro Fujisaki", "Consultando los la base de datos...");
 
         var dlg = new Dialogs.DialogBuscar();
         await dlg.ShowDialog(this);
@@ -251,12 +251,12 @@ public partial class MainWindow : Window
         if (dlg.CodigoBuscado is not null)
         {
             ActualizarSpritePorAccion("Sure");
-            MostrarDialogo("Bibliotecaria", $"Buscando el código: {dlg.CodigoBuscado}. Un momento...");
+            MostrarDialogo("Chihiro Fujisaki", $"Buscando el código: {dlg.CodigoBuscado}. Un momento...");
         }
         else
         {
             ActualizarSpritePorAccion("Thinking");
-            MostrarDialogo("Bibliotecaria", "La búsqueda fue cancelada. Aquí estaré cuando lo necesites.");
+            MostrarDialogo("Chihiro Fujisaki", "La búsqueda fue cancelada. Aquí estaré cuando lo necesites.");
         }
     }
 
@@ -264,7 +264,7 @@ public partial class MainWindow : Window
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Happy");
-        MostrarDialogo("Bibliotecaria", "¡Un nuevo volumen para la colección!");
+        MostrarDialogo("Chihiro Fujisaki", "¡Un nuevo volumen para la colección!");
 
         var dlg = new Dialogs.DialogAgregar();
         await dlg.ShowDialog(this);
@@ -272,13 +272,13 @@ public partial class MainWindow : Window
         if (dlg.Resultado is not null)
         {
             ActualizarSpritePorAccion("Happy");
-            MostrarDialogo("Bibliotecaria",
+            MostrarDialogo("Chihiro Fujisaki",
                 $"«{dlg.Resultado.Titulo}» de {dlg.Resultado.Autor} ha sido registrado con el código {dlg.Resultado.Codigo}.");
         }
         else
         {
             ActualizarSpritePorAccion("Sure");
-            MostrarDialogo("Bibliotecaria", "Registro cancelado. El estante espera pacientemente.");
+            MostrarDialogo("Chihiro Fujisaki", "Registro cancelado. El estante espera pacientemente.");
         }
     }
 
@@ -286,14 +286,14 @@ public partial class MainWindow : Window
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Sure");
-        MostrarDialogo("Bibliotecaria", "Desplegando el inventario completo de la Biblioteca Arcana...");
+        MostrarDialogo("Chihiro Fujisaki", "Desplegando el inventario completo de la Biblioteca...");
     }
 
     private async void OnPrestamoClick(object? sender, RoutedEventArgs e)
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Doubt");
-        MostrarDialogo("Bibliotecaria", "¿Un préstamo? Espero que el lector cuide bien el tomo...");
+        MostrarDialogo("Chihiro Fujisaki", "¿Un préstamo? Espero que el usuario cuide bien el tomo...");
 
         var dlg = new Dialogs.DialogPrestamo();
         await dlg.ShowDialog(this);
@@ -301,13 +301,13 @@ public partial class MainWindow : Window
         if (dlg.CodigoLibro is not null)
         {
             ActualizarSpritePorAccion("Thinking");
-            MostrarDialogo("Bibliotecaria",
+            MostrarDialogo("Chihiro Fujisaki",
                 $"El libro {dlg.CodigoLibro} ha sido registrado a nombre de {dlg.NombreLector}. Que aproveche la lectura.");
         }
         else
         {
             ActualizarSpritePorAccion("Sure");
-            MostrarDialogo("Bibliotecaria", "Préstamo cancelado. El volumen permanece en sus estantes.");
+            MostrarDialogo("Chihiro Fujisaki", "Préstamo cancelado. El volumen permanece en sus estantes.");
         }
     }
 
@@ -315,7 +315,7 @@ public partial class MainWindow : Window
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Sure");
-        MostrarDialogo("Bibliotecaria", "¿El viajero trae de regreso un volumen prestado?");
+        MostrarDialogo("Chihiro Fujisaki", "¿El usuario trae de regreso un volumen prestado?");
 
         var dlg = new Dialogs.DialogDevolver();
         await dlg.ShowDialog(this);
@@ -323,13 +323,13 @@ public partial class MainWindow : Window
         if (dlg.CodigoLibro is not null)
         {
             ActualizarSpritePorAccion("Happy");
-            MostrarDialogo("Bibliotecaria",
+            MostrarDialogo("Chihiro Fujisaki",
                 $"El libro {dlg.CodigoLibro} ha sido devuelto sano y salvo. Los estantes agradecen su retorno.");
         }
         else
         {
             ActualizarSpritePorAccion("Sure");
-            MostrarDialogo("Bibliotecaria", "Devolución cancelada. Cuando estés listo, aquí estaré.");
+            MostrarDialogo("Chihiro Fujisaki", "Devolución cancelada. Cuando estés listo, aquí estaré.");
         }
     }
 
@@ -337,14 +337,14 @@ public partial class MainWindow : Window
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Thinking");
-        MostrarDialogo("Bibliotecaria", "Consultando los anales... Generando el reporte de préstamos.");
+        MostrarDialogo("Chihiro Fujisaki", "Consultando los anales... Generando el reporte de préstamos.");
     }
 
     private async void OnCargarClick(object? sender, RoutedEventArgs e)
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Sure");
-        MostrarDialogo("Bibliotecaria", "¿Desde qué grimorio deseas importar el inventario?");
+        MostrarDialogo("Chihiro Fujisaki", "¿Desde qué grimorio deseas importar el registro?");
 
         var dlg = new Dialogs.DialogCargar();
         await dlg.ShowDialog(this);
@@ -352,13 +352,13 @@ public partial class MainWindow : Window
         if (dlg.RutaArchivo is not null)
         {
             ActualizarSpritePorAccion("Happy");
-            MostrarDialogo("Bibliotecaria",
+            MostrarDialogo("Chihiro Fujisaki",
                 $"El archivo ha sido encontrado. Absorbiendo los registros de: {System.IO.Path.GetFileName(dlg.RutaArchivo)}...");
         }
         else
         {
             ActualizarSpritePorAccion("Sure");
-            MostrarDialogo("Bibliotecaria", "Carga cancelada. Los estantes esperan pacientemente.");
+            MostrarDialogo("Chihiro Fujisaki", "Carga cancelada. Los estantes esperan pacientemente.");
         }
     }
 
@@ -379,7 +379,7 @@ public partial class MainWindow : Window
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Doubt");
-        MostrarDialogo("Bibliotecaria", "Hasta pronto, viajero. Los libros siempre te esperarán aquí...");
+        MostrarDialogo("Chihiro Fujisaki", "Hasta pronto, usuario. Los libros siempre te esperarán aquí...");
         Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
         {
             await System.Threading.Tasks.Task.Delay(1800);
