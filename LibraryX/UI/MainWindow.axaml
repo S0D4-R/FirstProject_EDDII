@@ -119,7 +119,6 @@
         <Button Classes="side" Content="📚 Préstamo" Click="OnPrestamoClick"/>
         <Button Classes="side" Content="↩️ Devolver" Click="OnDevolverClick"/>
         <Button Classes="side" Content="📊 Reporte" Click="OnReporteClick"/>
-        <Button Classes="side" Content="⬆️ Cargar" Click="OnCargarClick"/>
         <Button Classes="side danger" Content="🚪 Salir" Click="OnExitClick"/>
       </StackPanel>
 

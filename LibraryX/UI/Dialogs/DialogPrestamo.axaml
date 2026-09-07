@@ -55,8 +55,8 @@
                  HorizontalAlignment="Center" Opacity="0.85" Margin="0,0,0,6"/>
 
       <StackPanel Spacing="0">
-        <TextBlock Classes="label" Text="CÓDIGO DEL LIBRO"/>
-        <TextBox x:Name="TxtCodigo" Watermark="Ej. LIB-001"/>
+        <TextBlock Classes="label" Text="TÍTULO DEL LIBRO"/>
+        <TextBox x:Name="TxtTitulo" Watermark="Título del volumen a prestar"/>
       </StackPanel>
 
       <StackPanel Spacing="0">

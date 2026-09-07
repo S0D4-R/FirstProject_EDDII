@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="LibraryX.UI.Dialogs.DialogListado"
+        Title="Listado del Catálogo"
+        Width="560" Height="580"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#1a1410">
+
+  <Window.Styles>
+    <Style Selector="TextBlock.item">
+      <Setter Property="Foreground" Value="#e8e0f4"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+      <Setter Property="Margin" Value="0,4"/>
+    </Style>
+    <Style Selector="Button.confirm">
+      <Setter Property="Background" Value="#2e1f4a"/>
+      <Setter Property="BorderBrush" Value="#7c5cbf"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="#c4a8f0"/>
+      <Setter Property="Padding" Value="20,8"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="Auto,*,Auto" Margin="20" MaxWidth="520">
+    <Border Grid.Row="0" BorderBrush="#5a3e1b" BorderThickness="1" CornerRadius="4"
+            Padding="20,14">
+      <StackPanel Spacing="4">
+        <TextBlock Text="📋 CATÁLOGO COMPLETO"
+                   Foreground="#c9a96e" FontSize="11" LetterSpacing="3"
+                   HorizontalAlignment="Center" Opacity="0.85"/>
+        <TextBlock x:Name="TxtTitulo" Foreground="#e8e0f4" FontSize="13"
+                   HorizontalAlignment="Center"/>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Margin="0,12,0,12" BorderBrush="#3d2e1a" BorderThickness="1"
+            CornerRadius="4" Padding="14,10" Background="#12100e">
+      <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <StackPanel x:Name="ListaContenido" Spacing="2" Margin="0,0,8,0"/>
+      </ScrollViewer>
+    </Border>
+
+    <Button Grid.Row="2" Classes="confirm" Content="✖  Cerrar"
+            HorizontalAlignment="Center" HorizontalContentAlignment="Center"
+            Click="OnCerrarClick"/>
+  </Grid>
+
+</Window>

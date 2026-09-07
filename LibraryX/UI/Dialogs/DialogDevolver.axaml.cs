@@ -5,7 +5,7 @@ using Avalonia.Interactivity;
 
 public partial class DialogDevolver : Window
 {
-    public string? CodigoLibro { get; private set; }
+    public string? TituloLibro { get; private set; }
 
     public DialogDevolver()
     {
@@ -14,20 +14,20 @@ public partial class DialogDevolver : Window
 
     private void OnConfirmarClick(object? sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(TxtCodigo.Text))
+        if (string.IsNullOrWhiteSpace(TxtTitulo.Text))
         {
-            TxtError.Text = "Ingresa el código del libro a devolver.";
+            TxtError.Text = "Ingresa el título del libro a devolver.";
             TxtError.IsVisible = true;
             return;
         }
 
-        CodigoLibro = TxtCodigo.Text.Trim();
+        TituloLibro = TxtTitulo.Text.Trim();
         Close();
     }
 
     private void OnCancelarClick(object? sender, RoutedEventArgs e)
     {
-        CodigoLibro = null;
+        TituloLibro = null;
         Close();
     }
 }

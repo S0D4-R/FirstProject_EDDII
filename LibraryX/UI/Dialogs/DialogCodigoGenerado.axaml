@@ -1,0 +1,44 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="LibraryX.UI.Dialogs.DialogCodigoGenerado"
+        Title="Código Generado"
+        Width="380" Height="260"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#1a1410">
+
+  <Window.Styles>
+    <Style Selector="Button.confirm">
+      <Setter Property="Background" Value="#2e1f4a"/>
+      <Setter Property="BorderBrush" Value="#7c5cbf"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="#c4a8f0"/>
+      <Setter Property="Padding" Value="20,8"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+  </Window.Styles>
+
+  <Border Margin="20" BorderBrush="#5a3e1b" BorderThickness="1" CornerRadius="4" Padding="24">
+    <StackPanel Spacing="16">
+
+      <TextBlock Text="✦ CÓDIGO GENERADO ✦"
+                 Foreground="#c9a96e" FontSize="11" LetterSpacing="3"
+                 HorizontalAlignment="Center" Opacity="0.85" Margin="0,0,0,6"/>
+
+      <TextBlock x:Name="TxtDescripcion" Foreground="#e8e0f4" FontSize="12"
+                 TextWrapping="Wrap" TextAlignment="Center"/>
+
+      <Border BorderBrush="#7c5cbf" BorderThickness="1" CornerRadius="4" Padding="16,12">
+        <TextBlock x:Name="TxtCodigo" Foreground="#c4a8f0" FontSize="24" LetterSpacing="3"
+                   HorizontalAlignment="Center"/>
+      </Border>
+
+      <Button Classes="confirm" Content="✔  Entendido"
+              HorizontalAlignment="Center" HorizontalContentAlignment="Center"
+              Click="OnAceptarClick"/>
+
+    </StackPanel>
+  </Border>
+
+</Window>

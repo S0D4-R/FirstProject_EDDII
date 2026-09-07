@@ -35,7 +35,13 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [/home/yv/YV/Landivar/cuarto_semestre/EDD_II/FirstProject/LibraryX/UI/Dialogs/DialogCargar.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[/home/yv/YV/Landivar/cuarto_semestre/EDD_II/FirstProject/LibraryX/UI/Dialogs/DialogCodigoGenerado.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [/home/yv/YV/Landivar/cuarto_semestre/EDD_II/FirstProject/LibraryX/UI/Dialogs/DialogDevolver.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/yv/YV/Landivar/cuarto_semestre/EDD_II/FirstProject/LibraryX/UI/Dialogs/DialogListado.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [/home/yv/YV/Landivar/cuarto_semestre/EDD_II/FirstProject/LibraryX/UI/Dialogs/DialogPrestamo.axaml]

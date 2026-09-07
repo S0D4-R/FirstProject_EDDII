@@ -4,6 +4,8 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using LibVLCSharp.Shared;
+using LibraryX.Models;
+using LibraryX.StructuresMain;
 
 namespace LibraryX.UI;
 
@@ -11,6 +13,12 @@ public partial class MainWindow : Window
 {
     private LibVLC? _libVLC;
     private MediaPlayer? _mediaPlayer;
+
+    // Estructuras de datos integradas
+    private readonly MinHeap _minHeap = new();
+    private readonly MaxHeap _maxHeap = new();
+    private readonly BookShelf _arbolBPlus = new();
+    private readonly string _rutaCsv = System.IO.Path.Combine(AppContext.BaseDirectory, "Data", "book_packets.csv");
 
     // Sistema de diálogos por pasos
     private string[][] _dialogoActual = [];
@@ -28,6 +36,7 @@ public partial class MainWindow : Window
         CargarFondo("library.jpg");
         ActualizarSpritePorAccion("Happy");
         CargarAudioInicial();
+        CargarInventarioInicial();
 
         // Diálogo de bienvenida al arrancar
         IniciarDialogo(
@@ -236,27 +245,38 @@ public partial class MainWindow : Window
     }
 
     // =========================================================
-    // BOTONES SIDEBAR — abren Dialog Windows
+    // BOTONES SIDEBAR — Operaciones de la Biblioteca
     // =========================================================
 
     private async void OnBuscarClick(object? sender, RoutedEventArgs e)
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Thinking");
-        MostrarDialogo("Chihiro Fujisaki", "Consultando los la base de datos...");
+        MostrarDialogo("Chihiro Fujisaki", "Consultando la base de datos...");
 
         var dlg = new Dialogs.DialogBuscar();
         await dlg.ShowDialog(this);
 
         if (dlg.CodigoBuscado is not null)
         {
-            ActualizarSpritePorAccion("Sure");
-            MostrarDialogo("Chihiro Fujisaki", $"Buscando el código: {dlg.CodigoBuscado}. Un momento...");
+            BookModel? libro = _arbolBPlus.search(dlg.CodigoBuscado);
+
+            if (libro != null)
+            {
+                ActualizarSpritePorAccion("Sure");
+                MostrarDialogo("Chihiro Fujisaki",
+                    $"Encontrado: [{libro.Codigo}] «{libro.Titulo}» por {libro.Autor} ({libro.Categoria}) | Disponibles: {libro.CopiasDisponibles} | Préstamos: {libro.VecesPrestado}");
+            }
+            else
+            {
+                ActualizarSpritePorAccion("Thinking");
+                MostrarDialogo("Chihiro Fujisaki", $"No se encontró ningún volumen con el código: {dlg.CodigoBuscado}.");
+            }
         }
         else
         {
             ActualizarSpritePorAccion("Thinking");
-            MostrarDialogo("Chihiro Fujisaki", "La búsqueda fue cancelada. Aquí estaré cuando lo necesites.");
+            MostrarDialogo("Chihiro Fujisaki", "La búsqueda fue cancelada.");
         }
     }
 
@@ -266,11 +286,18 @@ public partial class MainWindow : Window
         ActualizarSpritePorAccion("Happy");
         MostrarDialogo("Chihiro Fujisaki", "¡Un nuevo volumen para la colección!");
 
-        var dlg = new Dialogs.DialogAgregar();
+        string[] codigosExistentes = _arbolBPlus.ObtenerTodos().Select(l => l.Codigo).ToArray();
+        var dlg = new Dialogs.DialogAgregar(codigosExistentes);
         await dlg.ShowDialog(this);
 
         if (dlg.Resultado is not null)
         {
+            _minHeap.Insertar(dlg.Resultado);
+            _maxHeap.Insertar(dlg.Resultado);
+            _arbolBPlus.insert(dlg.Resultado);
+
+            await new Dialogs.DialogCodigoGenerado(dlg.Resultado.Codigo, dlg.Resultado.Titulo).ShowDialog(this);
+
             ActualizarSpritePorAccion("Happy");
             MostrarDialogo("Chihiro Fujisaki",
                 $"«{dlg.Resultado.Titulo}» de {dlg.Resultado.Autor} ha sido registrado con el código {dlg.Resultado.Codigo}.");
@@ -282,32 +309,61 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OnListarClick(object? sender, RoutedEventArgs e)
+    private async void OnListarClick(object? sender, RoutedEventArgs e)
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Sure");
-        MostrarDialogo("Chihiro Fujisaki", "Desplegando el inventario completo de la Biblioteca...");
+
+        var elementos = _arbolBPlus.ObtenerTodos();
+        if (elementos.Length == 0)
+        {
+            MostrarDialogo("Chihiro Fujisaki", "El inventario está vacío. Carga un archivo CSV o agrega un libro manualmente.");
+            return;
+        }
+
+        await new Dialogs.DialogListado(elementos).ShowDialog(this);
+        MostrarDialogo("Chihiro Fujisaki", $"Mostrando el catálogo completo ({elementos.Length} títulos). ¿Exploramos otro rincón?");
     }
 
     private async void OnPrestamoClick(object? sender, RoutedEventArgs e)
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Doubt");
-        MostrarDialogo("Chihiro Fujisaki", "¿Un préstamo? Espero que el usuario cuide bien el tomo...");
+        MostrarDialogo("Chihiro Fujisaki", "¿Un préstamo? Registrando la salida del volumen...");
 
         var dlg = new Dialogs.DialogPrestamo();
         await dlg.ShowDialog(this);
 
-        if (dlg.CodigoLibro is not null)
+        if (dlg.TituloLibro is not null)
         {
-            ActualizarSpritePorAccion("Thinking");
-            MostrarDialogo("Chihiro Fujisaki",
-                $"El libro {dlg.CodigoLibro} ha sido registrado a nombre de {dlg.NombreLector}. Que aproveche la lectura.");
+            BookModel? libro = BuscarPorTitulo(_arbolBPlus.ObtenerTodos(), dlg.TituloLibro);
+
+            if (libro != null)
+            {
+                if (libro.CopiasDisponibles > 0)
+                {
+                    libro.CopiasDisponibles--;
+                    libro.VecesPrestado++;
+                    ActualizarSpritePorAccion("Happy");
+                    MostrarDialogo("Chihiro Fujisaki",
+                        $"El préstamo del libro «{libro.Titulo}» se registró a nombre de {dlg.NombreLector}. Copias restantes: {libro.CopiasDisponibles}.");
+                }
+                else
+                {
+                    ActualizarSpritePorAccion("Doubt");
+                    MostrarDialogo("Chihiro Fujisaki", $"No hay copias disponibles del libro «{libro.Titulo}» en este momento.");
+                }
+            }
+            else
+            {
+                ActualizarSpritePorAccion("Thinking");
+                MostrarDialogo("Chihiro Fujisaki", $"No se encontró ningún libro con el título: {dlg.TituloLibro}.");
+            }
         }
         else
         {
             ActualizarSpritePorAccion("Sure");
-            MostrarDialogo("Chihiro Fujisaki", "Préstamo cancelado. El volumen permanece en sus estantes.");
+            MostrarDialogo("Chihiro Fujisaki", "Préstamo cancelado.");
         }
     }
 
@@ -315,51 +371,166 @@ public partial class MainWindow : Window
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Sure");
-        MostrarDialogo("Chihiro Fujisaki", "¿El usuario trae de regreso un volumen prestado?");
+        MostrarDialogo("Chihiro Fujisaki", "¿Retorno de un volumen prestado?");
 
         var dlg = new Dialogs.DialogDevolver();
         await dlg.ShowDialog(this);
 
-        if (dlg.CodigoLibro is not null)
+        if (dlg.TituloLibro is not null)
         {
-            ActualizarSpritePorAccion("Happy");
-            MostrarDialogo("Chihiro Fujisaki",
-                $"El libro {dlg.CodigoLibro} ha sido devuelto sano y salvo. Los estantes agradecen su retorno.");
+            BookModel? libro = BuscarPorTitulo(_arbolBPlus.ObtenerTodos(), dlg.TituloLibro);
+
+            if (libro != null)
+            {
+                libro.CopiasDisponibles++;
+                ActualizarSpritePorAccion("Happy");
+                MostrarDialogo("Chihiro Fujisaki",
+                    $"El libro «{libro.Titulo}» fue devuelto con éxito. Copias disponibles: {libro.CopiasDisponibles}.");
+            }
+            else
+            {
+                ActualizarSpritePorAccion("Thinking");
+                MostrarDialogo("Chihiro Fujisaki", $"No se encontró ningún libro con el título: {dlg.TituloLibro}.");
+            }
         }
         else
         {
             ActualizarSpritePorAccion("Sure");
-            MostrarDialogo("Chihiro Fujisaki", "Devolución cancelada. Cuando estés listo, aquí estaré.");
+            MostrarDialogo("Chihiro Fujisaki", "Devolución cancelada.");
         }
+    }
+
+    private static BookModel? BuscarPorTitulo(BookModel[] libros, string titulo)
+    {
+        foreach (var b in libros)
+        {
+            if (string.Equals(b.Titulo, titulo, StringComparison.OrdinalIgnoreCase)) return b;
+        }
+        return null;
     }
 
     private void OnReporteClick(object? sender, RoutedEventArgs e)
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Thinking");
-        MostrarDialogo("Chihiro Fujisaki", "Consultando los anales... Generando el reporte de préstamos.");
+
+        var todos = _arbolBPlus.ObtenerTodos();
+        if (todos.Length == 0)
+        {
+            MostrarDialogo("Chihiro Fujisaki", "Aún no hay registros cargados para generar el reporte.");
+            return;
+        }
+
+        // Reporte 1: listado del catálogo ordenado por título (requisito del PDF)
+        BookModel[] porTitulo = OrdenarPorTitulo(todos);
+
+        string reporteText = "📊 REPORTES RÁPIDOS\n\n📍 Catálogo ordenado por título:\n";
+        int maxLista = Math.Min(porTitulo.Length, 5);
+        for (int i = 0; i < maxLista; i++)
+        {
+            reporteText += $"{i + 1}. [{porTitulo[i].Codigo}] {porTitulo[i].Titulo} ({porTitulo[i].CopiasDisponibles} dispon.)\n";
+        }
+        if (porTitulo.Length > maxLista) reporteText += $"... y {porTitulo.Length - maxLista} más.";
+
+        // Reporte 2: top de libros más prestados (MaxHeap)
+        var topLibros = _maxHeap.ObtenerTop(5);
+        if (topLibros.Length == 0)
+        {
+            reporteText += "\n\n🏆 Todavía no hay préstamos registrados.";
+        }
+        else
+        {
+            reporteText += "\n\n🏆 Top libros más prestados (MaxHeap):\n";
+            for (int i = 0; i < topLibros.Length; i++)
+            {
+                reporteText += $"{i + 1}. [{topLibros[i].Codigo}] {topLibros[i].Titulo} ({topLibros[i].VecesPrestado} préstamos)\n";
+            }
+        }
+
+        ActualizarSpritePorAccion("Sure");
+        MostrarDialogo("Chihiro Fujisaki", reporteText);
+    }
+
+    // Ordena una copia del arreglo por título usando inserción propia (sin tipos nativos de colección)
+    private static BookModel[] OrdenarPorTitulo(BookModel[] libros)
+    {
+        BookModel[] copia = (BookModel[])libros.Clone();
+        for (int i = 1; i < copia.Length; i++)
+        {
+            BookModel actual = copia[i];
+            int j = i - 1;
+            while (j >= 0 && string.Compare(copia[j].Titulo, actual.Titulo, StringComparison.OrdinalIgnoreCase) > 0)
+            {
+                copia[j + 1] = copia[j];
+                j--;
+            }
+            copia[j + 1] = actual;
+        }
+        return copia;
     }
 
     private async void OnCargarClick(object? sender, RoutedEventArgs e)
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Sure");
-        MostrarDialogo("Chihiro Fujisaki", "¿Desde qué grimorio deseas importar el registro?");
+        MostrarDialogo("Chihiro Fujisaki", "¿Desde qué archivo CSV deseas importar el inventario?");
 
         var dlg = new Dialogs.DialogCargar();
         await dlg.ShowDialog(this);
 
         if (dlg.RutaArchivo is not null)
         {
+            var libros = CsvLoader.CargarDesdeCsv(dlg.RutaArchivo);
+            foreach (var libro in libros)
+            {
+                _minHeap.Insertar(libro);
+                _maxHeap.Insertar(libro);
+                _arbolBPlus.insert(libro);
+            }
+
             ActualizarSpritePorAccion("Happy");
             MostrarDialogo("Chihiro Fujisaki",
-                $"El archivo ha sido encontrado. Absorbiendo los registros de: {System.IO.Path.GetFileName(dlg.RutaArchivo)}...");
+                $"Se han cargado exitosamente {libros.Length} libros desde: {System.IO.Path.GetFileName(dlg.RutaArchivo)}.");
         }
         else
         {
             ActualizarSpritePorAccion("Sure");
-            MostrarDialogo("Chihiro Fujisaki", "Carga cancelada. Los estantes esperan pacientemente.");
+            MostrarDialogo("Chihiro Fujisaki", "Carga cancelada.");
         }
+    }
+
+    private void CargarInventarioInicial()
+    {
+        string[] posiblesRutas = [
+            _rutaCsv,
+            System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Data", "book_packets.csv"),
+            System.IO.Path.Combine("Data", "book_packets.csv"),
+            System.IO.Path.Combine(AppContext.BaseDirectory, "UI", "Assets", "book_packets.csv"),
+            System.IO.Path.Combine(Directory.GetCurrentDirectory(), "book_packets.csv")
+        ];
+
+        foreach (var p in posiblesRutas)
+        {
+            if (System.IO.File.Exists(p))
+            {
+                var libros = CsvLoader.CargarDesdeCsv(p);
+                foreach (var libro in libros)
+                {
+                    _minHeap.Insertar(libro);
+                    _maxHeap.Insertar(libro);
+                    _arbolBPlus.insert(libro);
+                }
+                break;
+            }
+        }
+    }
+
+    private void GuardarInventario()
+    {
+        var elementos = _arbolBPlus.ObtenerTodos();
+        CsvLoader.GuardarEnCsv(_rutaCsv, elementos);
+        string rutaProyecto = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Data", "book_packets.csv");
+        CsvLoader.GuardarEnCsv(rutaProyecto, elementos);
     }
 
     private void OnSpriteClick(object? sender, PointerPressedEventArgs e)
@@ -379,7 +550,8 @@ public partial class MainWindow : Window
     {
         OcultarOpciones();
         ActualizarSpritePorAccion("Doubt");
-        MostrarDialogo("Chihiro Fujisaki", "Hasta pronto, usuario. Los libros siempre te esperarán aquí...");
+        MostrarDialogo("Chihiro Fujisaki", "Hasta pronto. Los libros siempre te esperarán aquí...");
+        GuardarInventario();
         Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
         {
             await System.Threading.Tasks.Task.Delay(1800);
@@ -389,6 +561,7 @@ public partial class MainWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        GuardarInventario();
         _mediaPlayer?.Dispose();
         _libVLC?.Dispose();
         base.OnClosed(e);
