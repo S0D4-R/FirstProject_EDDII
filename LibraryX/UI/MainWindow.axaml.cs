@@ -15,8 +15,8 @@ public partial class MainWindow : Window
     private MediaPlayer? _mediaPlayer;
 
     // Estructuras de datos integradas
-    private readonly MinHeap _minHeap = new();
-    private readonly MaxHeap _maxHeap = new();
+    private MinHeap _minHeap = new();
+    private MaxHeap _maxHeap = new();
     private readonly BookShelf _arbolBPlus = new();
     private readonly string _rutaCsv = System.IO.Path.Combine(AppContext.BaseDirectory, "Data", "book_packets.csv");
 
@@ -42,7 +42,7 @@ public partial class MainWindow : Window
         IniciarDialogo(
             ["Chihiro Fujisaki", "Chihiro Fujisaki"],
             [
-                "Bienvenido a la Biblioteca Arcana... Sus pasillos guardan siglos de conocimiento.",
+                "Bienvenido a la Biblioteca!... Sus pasillos guardan siglos de conocimiento.",
                 "Puedes buscar, agregar o prestar volúmenes desde el panel lateral. ¿En qué puedo ayudarte?"
             ],
             ["Happy", "Sure"]
@@ -409,6 +409,54 @@ public partial class MainWindow : Window
         return null;
     }
 
+    private async void OnEliminarClick(object? sender, RoutedEventArgs e)
+    {
+        OcultarOpciones();
+        ActualizarSpritePorAccion("Thinking");
+        MostrarDialogo("Chihiro Fujisaki", "¿Qué volumen retiramos de la colección? Indica su código.");
+
+        var dlg = new Dialogs.DialogBuscar();
+        await dlg.ShowDialog(this);
+
+        if (dlg.CodigoBuscado is not null)
+        {
+            BookModel? libro = _arbolBPlus.search(dlg.CodigoBuscado);
+            if (libro == null)
+            {
+                ActualizarSpritePorAccion("Thinking");
+                MostrarDialogo("Chihiro Fujisaki", $"No se encontró ningún volumen con el código: {dlg.CodigoBuscado}.");
+                return;
+            }
+
+            bool eliminado = _arbolBPlus.delete(dlg.CodigoBuscado);
+            if (eliminado)
+            {
+                // Los heaps no tienen eliminación por clave: se reconstruyen sin el libro eliminado.
+                _minHeap = new MinHeap();
+                _maxHeap = new MaxHeap();
+                foreach (var restante in _arbolBPlus.ObtenerTodos())
+                {
+                    _minHeap.Insertar(restante);
+                    _maxHeap.Insertar(restante);
+                }
+
+                ActualizarSpritePorAccion("Sure");
+                MostrarDialogo("Chihiro Fujisaki",
+                    $"El volumen «{libro.Titulo}» ({libro.Codigo}) fue retirado de la colección.");
+            }
+            else
+            {
+                ActualizarSpritePorAccion("Doubt");
+                MostrarDialogo("Chihiro Fujisaki", $"No fue posible eliminar el código {dlg.CodigoBuscado}.");
+            }
+        }
+        else
+        {
+            ActualizarSpritePorAccion("Sure");
+            MostrarDialogo("Chihiro Fujisaki", "Eliminación cancelada.");
+        }
+    }
+
     private void OnReporteClick(object? sender, RoutedEventArgs e)
     {
         OcultarOpciones();
@@ -440,7 +488,7 @@ public partial class MainWindow : Window
         }
         else
         {
-            reporteText += "\n\n🏆 Top libros más prestados (MaxHeap):\n";
+            reporteText += "\n\n🏆 Top libros más prestados:\n";
             for (int i = 0; i < topLibros.Length; i++)
             {
                 reporteText += $"{i + 1}. [{topLibros[i].Codigo}] {topLibros[i].Titulo} ({topLibros[i].VecesPrestado} préstamos)\n";
