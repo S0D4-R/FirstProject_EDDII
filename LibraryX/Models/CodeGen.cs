@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Text;
 
+//Code generation
 namespace LibraryX.Models;
 
 public static class CodeGen
